@@ -74,7 +74,6 @@ class UserInterface extends JFrame implements ActionListener {
         this.currentPath = currentPath;
     }
 
-
     public void actionPerformed(ActionEvent e) {
         Functions functions = new Functions();
         String action = e.getActionCommand();
@@ -174,7 +173,13 @@ class UserInterface extends JFrame implements ActionListener {
             case "Zmień plik": {
                 fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
                 result = fileChooser.showOpenDialog(this);
-                setCurrentPath(fileChooser.getSelectedFile().getAbsolutePath());
+
+                try {
+                    setCurrentPath(fileChooser.getSelectedFile().getAbsolutePath());
+                } catch (NullPointerException n) {
+                    System.out.println("User choosed cancel in fileChooser!");
+                }
+
                 l.setText(currentPath);
                 break;
             }
