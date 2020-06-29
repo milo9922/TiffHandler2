@@ -5,15 +5,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
-class Functions {
-
+class Service {
 
     void tiffToJpg(String path) throws IOException {
         // open tiff file
         File tiffFile = new File(path);
         BufferedImage image = ImageIO.read(tiffFile);
 
-        // convert tiff to jpg (create new jpg file)
+        // convert tiff to jpg (create new output.jpg file)
         ImageIO.write(image, "jpg", new File("output.jpg"));
     }
 
@@ -22,7 +21,7 @@ class Functions {
         File tiffFile = new File(path);
         BufferedImage image = ImageIO.read(tiffFile);
 
-        // convert tiff to jpg (create new png file)
+        // convert tiff to png (create new output.png file)
         ImageIO.write(image, "png", new File("output.png"));
     }
 
@@ -41,7 +40,7 @@ class Functions {
     }
 
 
-    LinkedList<Integer> colorReader(String path) throws IOException {
+    LinkedList<Integer> measureDimensions(String path) throws IOException {
         //open tiff file
         File originalImage = new File(path);
         BufferedImage img = ImageIO.read(originalImage);
@@ -83,8 +82,21 @@ class Functions {
 
         // create and return list of positions
         LinkedList<Integer> measurementResultPx = new LinkedList<>();
-        measurementResultPx.add(posX2 - posX1);
-        measurementResultPx.add(posY2 - posY1);
+        int measurementWidth = posX2 - posX1;
+        int measurementHeight = posY2 - posY1;
+
+        if (measurementWidth < 0) {
+            measurementResultPx.add(img.getWidth());
+        } else {
+            measurementResultPx.add(measurementWidth);
+        }
+
+        if (measurementHeight < 0) {
+            measurementResultPx.add(img.getHeight());
+        } else {
+            measurementResultPx.add(measurementHeight);
+        }
+
         return measurementResultPx;
     }
 

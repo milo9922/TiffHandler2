@@ -6,12 +6,12 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 
-class UserInterface extends JFrame implements ActionListener {
+class Gui extends JFrame implements ActionListener {
 
-    private JLabel l;
-    private String currentPath = null;
+    private JLabel l, image;
+    private String currentPath = "empty.jpg";
 
-    private UserInterface() {
+    private Gui() {
 
         // this label displays result
         l = new JLabel();
@@ -47,7 +47,6 @@ class UserInterface extends JFrame implements ActionListener {
         b6.setBounds(50, 470, 200, 50);
         b6.addActionListener(this);
 
-
         // set atributes of program gui
         add(b);
         add(l);
@@ -58,24 +57,31 @@ class UserInterface extends JFrame implements ActionListener {
         add(b6);
         setSize(750, 590);
         setTitle("TiffHandler");
-        Color color = new Color(235, 235, 255);
-        setBackground(color);
+
+        image = new JLabel();
+
+        image.setBounds(320, 160, 400, 300);
+        Image img = new ImageIcon(this.getClass().getResource(currentPath)).getImage().getScaledInstance(400, 300, Image.SCALE_DEFAULT);
+        image.setIcon(new ImageIcon(img));
+        image.setVisible(true);
+        add(image);
+
         setLayout(null);
         setVisible(true);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static void main(String[] args) {
-        new UserInterface();
+        new Gui();
     }
 
-    // path setter
     private void setCurrentPath(String currentPath) {
         this.currentPath = currentPath;
     }
 
     public void actionPerformed(ActionEvent e) {
-        Functions functions = new Functions();
+        Service service = new Service();
         String action = e.getActionCommand();
         JFileChooser fileChooser = new JFileChooser();
         int result = 0;
@@ -92,7 +98,7 @@ class UserInterface extends JFrame implements ActionListener {
 
                 try {
                     if (result == JFileChooser.APPROVE_OPTION) {
-                        functions.tiffToJpg(currentPath);
+                        service.tiffToJpg(currentPath);
                         l.setText("Konwersja zakończona sukcesem!");
                     }
                 } catch (Exception ex) {
@@ -112,7 +118,7 @@ class UserInterface extends JFrame implements ActionListener {
                     }
 
                     if (result == JFileChooser.APPROVE_OPTION) {
-                        functions.tiffToPng(currentPath);
+                        service.tiffToPng(currentPath);
                         l.setText("Konwersja zakończona sukcesem!");
 
                     }
@@ -131,8 +137,8 @@ class UserInterface extends JFrame implements ActionListener {
                         setCurrentPath(fileChooser.getSelectedFile().getAbsolutePath());
                     }
                     if (result == JFileChooser.APPROVE_OPTION) {
-                        int width = functions.getWidth(currentPath);
-                        int height = functions.getHeight(currentPath);
+                        int width = service.getWidth(currentPath);
+                        int height = service.getHeight(currentPath);
                         l.setText("Rozdzielczość: " + width + " x " + height);
                     }
                 } catch (Exception ex) {
@@ -152,7 +158,7 @@ class UserInterface extends JFrame implements ActionListener {
 
                     if (result == JFileChooser.APPROVE_OPTION) {
                         l.setText("Sprawdzanie wymiarów");
-                        LinkedList<Integer> measurementResult = functions.colorReader(currentPath);
+                        LinkedList<Integer> measurementResult = service.measureDimensions(currentPath);
                         int measuredWidth = measurementResult.get(0);
                         int measuredHeight = measurementResult.get(1);
                         DecimalFormat df2 = new DecimalFormat("#.##");
@@ -180,7 +186,9 @@ class UserInterface extends JFrame implements ActionListener {
                     System.out.println("User choosed cancel in fileChooser!");
                 }
 
+                ImageIcon icon = new ImageIcon(currentPath);
                 l.setText(currentPath);
+                image.setIcon(icon);
                 break;
             }
 
